@@ -1,0 +1,15 @@
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\bin\Debug\net6.0\folhaPagamento.exe
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\bin\Debug\net6.0\folhaPagamento.deps.json
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\bin\Debug\net6.0\folhaPagamento.runtimeconfig.json
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\bin\Debug\net6.0\folhaPagamento.dll
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\bin\Debug\net6.0\folhaPagamento.pdb
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.csproj.AssemblyReference.cache
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.AssemblyInfoInputs.cache
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.AssemblyInfo.cs
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.csproj.CoreCompileInputs.cache
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.dll
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\refint\folhaPagamento.dll
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.pdb
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\folhaPagamento.genruntimeconfig.cache
+C:\Users\yago_\OneDrive\repositorios\folhaPagamento\obj\Debug\net6.0\ref\folhaPagamento.dll
