@@ -1,4 +1,6 @@
-﻿/*namespace folhaPagamento
+﻿using System.Security.Cryptography;
+
+namespace folhaPagamento
 {
     public enum MotivoRescisao
     {
@@ -9,31 +11,23 @@
     }
     internal class Rescisao
     {
-
         private const int DiasPorMes = 30;
-        private const int MesesPorAno = 12;
-
         public double SaldoSalarioRescisao { get; set; }
         public double DecimoTerceiroRescisao { get; set; }
-        public double FeriasVencidasRescisao { get; set; }
-        public double FeriasProporcionaisRescisao { get; set; }
+        public double FeriasRescisao { get; set; }
+        public int MesesFerias { get; set; }
         public double AvisoPrevioRescisao { get; set; }
-        public double MultaFgtsRescisao { get; set; }
         public double HoraExtraRescisao { get; set; }
         public double DescontoFaltas { get; set; }
+        public double Fgts { get; set; }
+        public double DescontoInssRescisao { get; set; }
+        public double SalarioBaseInssRescisão { get; set; }
+        public double SalarioBaseIrrfRescisao { get; set; }
+        public double DescontoIrrfRescisao { get; set; }
 
 
-        public static Rescisao CalcularRescisao(DateTime dataAdmissao, DateTime dataDemissao, double salarioBruto, double horaExtra, double percentualHoraExtra, MotivoRescisao motivoRescisao, bool cumprirAviso, double faltasEmHoras)
+        public Rescisao CalcularRescisao(DateTime dataAdmissao, DateTime dataDemissao, double salarioBruto, double horaExtra, double percentualHoraExtra, MotivoRescisao motivoRescisao, int dependentes, bool cumprirAviso, double faltasEmHoras)
         {
-
-            
-            double valorRescisao = 0;
-            double saldoSalarioRescisao = 0;
-            double decimoTerceiroRescisao = 0;
-            double avisoPrevioRescisao = 0;
-            double horaExtraRescisao = 0;
-          
-
             Desconto desconto = new Desconto();
             Vencimento vencimento = new Vencimento();
             Rescisao resultado = new Rescisao();
@@ -43,45 +37,86 @@
                 case MotivoRescisao.DespedidaSemJustaCausa:
                     resultado.SaldoSalarioRescisao = vencimento.CalcularSaldoSalarioRescisao(dataAdmissao, dataDemissao, salarioBruto);
                     resultado.DecimoTerceiroRescisao = vencimento.CalcularDecimoTerceiroRescisao(dataAdmissao, dataDemissao, salarioBruto);
-                    resultado.FeriasRescisao = vencimento.CalcularFerias(dataAdmissao, dataDemissao, salarioBruto);
-                    resultado.AvisoPrevioRescisao = CalcularAvisoPrevio(dataAdmissao, dataDemissao, salarioBruto);
+                    (resultado.FeriasRescisao, resultado.MesesFerias) = vencimento.CalcularFeriasProporcionais(dataAdmissao, dataDemissao, salarioBruto);
+                    
+                    if (cumprirAviso)
+                    {
+                        resultado.AvisoPrevioRescisao = CalcularAvisoPrevio(dataAdmissao, dataDemissao, salarioBruto);
+                    }
+                    else
+                    {
+                        resultado.AvisoPrevioRescisao = -salarioBruto;
+                    }
+
                     resultado.HoraExtraRescisao = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
+                    resultado.Fgts = vencimento.CalcularFgts(salarioBruto);
                     resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
+                   
+                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao +
+                        resultado.FeriasRescisao + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
+                    
+                    resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
+
+                    resultado.SalarioBaseIrrfRescisao = resultado.SalarioBaseInssRescisão - resultado.DescontoInssRescisao - vencimento.DeducaoDependentes(dependentes);
+
+                    resultado.DescontoIrrfRescisao = desconto.CalcularIRRF(resultado.SalarioBaseIrrfRescisao);
                     break;
 
                 case MotivoRescisao.DespedidaPorJustaCausa:
                     resultado.SaldoSalarioRescisao = vencimento.CalcularSaldoSalarioRescisao(dataAdmissao, dataDemissao, salarioBruto);
-                    resultado.FeriasRescisao = vencimento.CalcularFerias(dataAdmissao, dataDemissao, salarioBruto);
+                    (resultado.FeriasRescisao, resultado.MesesFerias) = vencimento.CalcularFeriasProporcionais(dataAdmissao, dataDemissao, salarioBruto);
                     resultado.HoraExtraRescisao = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
+                    resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
+
+                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.FeriasRescisao + 
+                        resultado.HoraExtraRescisao - resultado.DescontoFaltas;
+
+                    resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
+
+                    resultado.SalarioBaseIrrfRescisao = resultado.SalarioBaseInssRescisão - resultado.DescontoInssRescisao - vencimento.DeducaoDependentes(dependentes);
+
+                    resultado.DescontoIrrfRescisao = desconto.CalcularIRRF(resultado.SalarioBaseIrrfRescisao);
+
+                    resultado.Fgts = vencimento.CalcularFgts(salarioBruto);
                     break;
 
                 case MotivoRescisao.PedidoDeDemissao:
                     resultado.SaldoSalarioRescisao = vencimento.CalcularSaldoSalarioRescisao(dataAdmissao, dataDemissao, salarioBruto);
                     resultado.DecimoTerceiroRescisao = vencimento.CalcularDecimoTerceiroRescisao(dataAdmissao, dataDemissao, salarioBruto);
-                    resultado.FeriasRescisao = vencimento.CalcularFerias(dataAdmissao, dataDemissao, salarioBruto);
+                    (resultado.FeriasRescisao, resultado.MesesFerias) = vencimento.CalcularFeriasProporcionais(dataAdmissao, dataDemissao, salarioBruto);
                     resultado.HoraExtraRescisao = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
-                    resultado.AvisoPrevioRescisao = CalcularAvisoPrevio(dataAdmissao, dataDemissao, salarioBruto);
-                                        
+                    resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
+
+
+                    if (cumprirAviso)
+                    {
+                        resultado.AvisoPrevioRescisao = CalcularAvisoPrevio(dataAdmissao, dataDemissao, salarioBruto);
+                    }
+                    else
+                    {
+                        resultado.AvisoPrevioRescisao = -salarioBruto;
+                    }
+
+                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao +
+                        resultado.FeriasRescisao + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
+
+                    resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
+
+                    resultado.SalarioBaseIrrfRescisao = resultado.SalarioBaseInssRescisão - resultado.DescontoInssRescisao - vencimento.DeducaoDependentes(dependentes);
+
+                    resultado.DescontoIrrfRescisao = desconto.CalcularIRRF(resultado.SalarioBaseIrrfRescisao);
+                    resultado.Fgts = vencimento.CalcularFgts(salarioBruto);
                     break;
             }
 
             return resultado;
         }
-
-
-        private static double CalcularAvisoPrevio(DateTime dataAdmissao, DateTime dataDemissao, double ultimoSalario)
+        public double CalcularAvisoPrevio(DateTime dataAdmissao, DateTime dataDemissao, double ultimoSalario)
         {
             int anosTrabalhados = dataDemissao.Year - dataAdmissao.Year;
-            int diasAvisoPrevio = DiasPorMes * 2 + (anosTrabalhados * 3); // Aviso prévio proporcional
+            int diasAvisoPrevio = DiasPorMes + (anosTrabalhados * 3);
             return (ultimoSalario / DiasPorMes) * diasAvisoPrevio;
         }
-
-        private static double CalcularMultaFGTS(double ultimoSalario)
-        {
-            // Implemente a lógica para calcular a multa do FGTS
-            // Por exemplo, 40% do saldo do FGTS
-            return 0.4 * saldoFGTS;
-        }
+        
     }
 }
-  */

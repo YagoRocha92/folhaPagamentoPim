@@ -8,7 +8,6 @@ namespace folhaPagamento
 {
     internal class Vencimento
     {
-        private const int DiasPorMes = 30;
         private const int MesesPorAno = 12;
         public double SalarioBase { get; set; }
         public double DescontoINSS { get; set; }
@@ -19,9 +18,9 @@ namespace folhaPagamento
         public double DescontoFaltasEmHoras { get; set; }
         public double SalarioLiquido { get; set; }
         public double DeducaoDependente { get; set; }
+        public double Fgts { get; set; }
 
-
-        public Vencimento CalcularSalarioMensal(double salarioBruto, int faltasEmHoras, int numeroDependentes, double horaExtra, bool optanteValeTransporte, double percentualHoraExtra)
+        public Vencimento CalcularSalarioMensal(double salarioBruto, int numeroDependentes, bool optanteValeTransporte, double percentualHoraExtra, double faltasEmHoras = 0, double horaExtra = 0)
         {
             Desconto desconto = new Desconto();
             Vencimento resultado = new Vencimento();
@@ -34,6 +33,7 @@ namespace folhaPagamento
             resultado.SalarioBaseIR = resultado.SalarioBase - resultado.DescontoINSS - resultado.DeducaoDependente;
             resultado.DescontoIR = desconto.CalcularIRRF(resultado.SalarioBaseIR);
             resultado.ValeTransporte = 0.0;
+            resultado.Fgts = CalcularFgts(salarioBruto);
 
             if (optanteValeTransporte)
             {
@@ -44,7 +44,6 @@ namespace folhaPagamento
 
             return resultado;
         }
-
         public double DeducaoDependentes(int dependentes)
         {
             double deducao = 189.59;
@@ -61,13 +60,12 @@ namespace folhaPagamento
             double totalHoraExtra = horaExtraCalculada * horaExtra;
             return totalHoraExtra;
         }
-
-        public double CalcularSaldoSalarioRescisao(DateTime dataAdmissao, DateTime dataDemissao, double ultimoSalario)
+        public double CalcularSaldoSalarioRescisao(DateTime dataAdmissao, DateTime dataDemissao, double salarioBruto)
         {
-            int diasTrabalhados = (dataDemissao - dataAdmissao).Days + 1;
-            return (ultimoSalario / DiasPorMes) * diasTrabalhados;
+            int diasTrabalhados = dataDemissao.Day + 1 - dataAdmissao.Day;
+            double valorProporcional = salarioBruto / 30 * diasTrabalhados + 1;
+            return valorProporcional;
         }
-
         public double CalcularDecimoTerceiro(double salarioBruto, DateTime dataAdmissao)
         {
             DateTime dataAtualDoCalculo = new DateTime(DateTime.Now.Year, 12, 31);
@@ -94,10 +92,11 @@ namespace folhaPagamento
         }
         public double CalcularDecimoTerceiroRescisao(DateTime dataAdmissao, DateTime dataDemissao, double ultimoSalario)
         {
-            int mesesTrabalhados = (dataDemissao.Year - dataAdmissao.Year) * MesesPorAno + dataDemissao.Month - dataAdmissao.Month + 1;
+            int mesesTrabalhados = dataDemissao.Month - dataAdmissao.Month;
+
             return (ultimoSalario / MesesPorAno) * mesesTrabalhados;
         }
-        public (double ValorFeriasProporcionais, int MesesProporcionais) CalcularFeriasProporcionais(DateTime dataCalculo, DateTime dataAdmissao, double salarioBruto)
+        public (double ValorFeriasProporcionais, int MesesProporcionais) CalcularFeriasProporcionais(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
         {
             if (dataCalculo < dataAdmissao)
             {
@@ -114,8 +113,8 @@ namespace folhaPagamento
                 mesesProporcionais -= anosTrabalhados * 12;
             }
 
-            // Verifica se já se passaram mais de 15 dias desde a data de admissão
-            if (dataCalculo.Subtract(dataAdmissao).Days >= 14)
+            // Verifica se já se passaram mais de 14 dias desde a data de admissão
+            if ((dataCalculo.Day - dataAdmissao.Day) >= 14)
             {
                 mesesProporcionais++; // Adiciona 1 mês completo
             }
@@ -129,6 +128,11 @@ namespace folhaPagamento
             }
 
             return (Math.Round(valorFeriasProporcionais, 2), mesesProporcionais);
+        }
+        public double CalcularFgts(double salarioBruto)
+        {
+            double fgtsMensal = salarioBruto * 0.08;
+            return fgtsMensal;
         }
     }
 
