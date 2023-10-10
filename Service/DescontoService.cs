@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace folhaPagamento
+namespace folhaPagamento.Service
 {
-    internal class Desconto
+    public class DescontoService
     {
         public double CalcularDescontoFaltasEmHoras(double faltasEmHoras, double salarioBruto)
         {
             const int horasMensaisPadrao = 220;
-            double descontoFaltas = (salarioBruto / horasMensaisPadrao) * faltasEmHoras;
+            double descontoFaltas = salarioBruto / horasMensaisPadrao * faltasEmHoras;
             return descontoFaltas;
         }
         public double CalcularIRRF(double salarioBaseIR)
@@ -24,19 +24,19 @@ namespace folhaPagamento
             }
             else if (salarioBaseIR <= 2826.65)
             {
-                irrf = (salarioBaseIR * 0.075) - 158.40;
+                irrf = salarioBaseIR * 0.075 - 158.40;
             }
             else if (salarioBaseIR <= 3751.05)
             {
-                irrf = (salarioBaseIR * 0.15) - 370.40;
+                irrf = salarioBaseIR * 0.15 - 370.40;
             }
             else if (salarioBaseIR <= 4664.68)
             {
-                irrf = (salarioBaseIR * 0.225) - 651.73;
+                irrf = salarioBaseIR * 0.225 - 651.73;
             }
             else
             {
-                irrf = (salarioBaseIR * 0.275) - 884.96;
+                irrf = salarioBaseIR * 0.275 - 884.96;
             }
 
             return irrf;

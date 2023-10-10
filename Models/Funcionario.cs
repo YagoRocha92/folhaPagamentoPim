@@ -1,6 +1,6 @@
-﻿namespace folhaPagamento
+﻿namespace folhaPagamento.Models
 {
-    internal class Funcionario
+    public class Funcionario
     {
 
         public int NumeroDependentes;
@@ -20,9 +20,17 @@
             CalculosMensais = new List<CalculoMensal>();
         }
 
-        public void AdicionarCalculoMensal(int mes, Vencimento resultado)
+        public void AdicionarCalculoMensal(int mes, SalarioMensal resultado)
         {
             CalculosMensais.Add(new CalculoMensal(mes, resultado));
+        }
+
+        public void AdicionarRescisao(int mes, Rescisao calculoRescisao)
+        {
+            CalculoMensal calculoMensal = new CalculoMensal();
+            calculoMensal.Rescisao = calculoRescisao;
+            calculoMensal.Mes = mes;
+            CalculosMensais.Add(calculoMensal);
         }
     }
 

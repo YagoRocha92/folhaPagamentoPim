@@ -1,6 +1,7 @@
-﻿using System.Security.Cryptography;
+﻿using folhaPagamento.Service;
+using System.Security.Cryptography;
 
-namespace folhaPagamento
+namespace folhaPagamento.Models
 {
     public enum MotivoRescisao
     {
@@ -9,7 +10,7 @@ namespace folhaPagamento
         PedidoDeDemissao,
 
     }
-    internal class Rescisao
+    public class Rescisao
     {
         private const int DiasPorMes = 30;
         public double SaldoSalarioRescisao { get; set; }
@@ -28,8 +29,8 @@ namespace folhaPagamento
 
         public Rescisao CalcularRescisao(DateTime dataAdmissao, DateTime dataDemissao, double salarioBruto, double horaExtra, double percentualHoraExtra, MotivoRescisao motivoRescisao, int dependentes, bool cumprirAviso, double faltasEmHoras)
         {
-            Desconto desconto = new Desconto();
-            Vencimento vencimento = new Vencimento();
+            DescontoService desconto = new DescontoService();
+            VencimentoService vencimento = new VencimentoService();
             Rescisao resultado = new Rescisao();
 
             switch (motivoRescisao)
@@ -38,7 +39,7 @@ namespace folhaPagamento
                     resultado.SaldoSalarioRescisao = vencimento.CalcularSaldoSalarioRescisao(dataAdmissao, dataDemissao, salarioBruto);
                     resultado.DecimoTerceiroRescisao = vencimento.CalcularDecimoTerceiroRescisao(dataAdmissao, dataDemissao, salarioBruto);
                     (resultado.FeriasRescisao, resultado.MesesFerias) = vencimento.CalcularFeriasProporcionais(dataAdmissao, dataDemissao, salarioBruto);
-                    
+
                     if (cumprirAviso)
                     {
                         resultado.AvisoPrevioRescisao = CalcularAvisoPrevio(dataAdmissao, dataDemissao, salarioBruto);
@@ -51,10 +52,10 @@ namespace folhaPagamento
                     resultado.HoraExtraRescisao = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
                     resultado.Fgts = vencimento.CalcularFgts(salarioBruto);
                     resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
-                   
+
                     resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao +
                         resultado.FeriasRescisao + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
-                    
+
                     resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
 
                     resultado.SalarioBaseIrrfRescisao = resultado.SalarioBaseInssRescisão - resultado.DescontoInssRescisao - vencimento.DeducaoDependentes(dependentes);
@@ -68,7 +69,7 @@ namespace folhaPagamento
                     resultado.HoraExtraRescisao = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
                     resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
 
-                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.FeriasRescisao + 
+                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.FeriasRescisao +
                         resultado.HoraExtraRescisao - resultado.DescontoFaltas;
 
                     resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
@@ -114,9 +115,9 @@ namespace folhaPagamento
         public double CalcularAvisoPrevio(DateTime dataAdmissao, DateTime dataDemissao, double ultimoSalario)
         {
             int anosTrabalhados = dataDemissao.Year - dataAdmissao.Year;
-            int diasAvisoPrevio = DiasPorMes + (anosTrabalhados * 3);
-            return (ultimoSalario / DiasPorMes) * diasAvisoPrevio;
+            int diasAvisoPrevio = DiasPorMes + anosTrabalhados * 3;
+            return ultimoSalario / DiasPorMes * diasAvisoPrevio;
         }
-        
+
     }
 }

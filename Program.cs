@@ -1,4 +1,7 @@
-﻿namespace folhaPagamento
+﻿using folhaPagamento.Models;
+using folhaPagamento.Service;
+
+namespace folhaPagamento
 {
     class Program
     {
@@ -21,7 +24,7 @@
 
             Funcionario funcionario = new Funcionario(numeroDependentes, salarioBruto, optanteValeTransporte, dataAdmissao, nome);
 
-            Vencimento vencimento = new Vencimento();
+            VencimentoService vencimento = new VencimentoService();
 
             // Calcular 13º 
             double decimoTerceiro = vencimento.CalcularDecimoTerceiroRescisao(dataAdmissao, dataCalculoDecimoTerceiro, salarioBruto);
@@ -43,7 +46,7 @@
             Console.WriteLine();
 
             // Calcular Salario Mensal
-            Vencimento resultado = vencimento.CalcularSalarioMensal(salarioBruto, numeroDependentes, optanteValeTransporte, percentualHoraExtra, faltas, horaExtra);
+            SalarioMensal resultado = vencimento.CalcularSalarioMensal(salarioBruto, numeroDependentes, optanteValeTransporte, percentualHoraExtra, faltas, horaExtra);
 
             funcionario.AdicionarCalculoMensal(1, resultado);
 

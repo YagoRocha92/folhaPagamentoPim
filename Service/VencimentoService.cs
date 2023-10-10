@@ -1,35 +1,27 @@
-﻿using System;
+﻿using folhaPagamento.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace folhaPagamento
+namespace folhaPagamento.Service
 {
-    internal class Vencimento
+    public class VencimentoService
     {
         private const int MesesPorAno = 12;
-        public double SalarioBase { get; set; }
-        public double DescontoINSS { get; set; }
-        public double SalarioBaseIR { get; set; }
-        public double DescontoIR { get; set; }
-        public double ValeTransporte { get; set; }
-        public double CalculoHoraExtra { get; set; }
-        public double DescontoFaltasEmHoras { get; set; }
-        public double SalarioLiquido { get; set; }
-        public double DeducaoDependente { get; set; }
-        public double Fgts { get; set; }
-
-        public Vencimento CalcularSalarioMensal(double salarioBruto, int numeroDependentes, bool optanteValeTransporte, double percentualHoraExtra, double faltasEmHoras = 0, double horaExtra = 0)
+       
+        public SalarioMensal CalcularSalarioMensal(double salarioBruto, int numeroDependentes, bool optanteValeTransporte, double percentualHoraExtra, double faltasEmHoras = 0, double horaExtra = 0)
         {
-            Desconto desconto = new Desconto();
-            Vencimento resultado = new Vencimento();
+            DescontoService desconto = new DescontoService();
+            SalarioMensal resultado = new SalarioMensal();
+            VencimentoService vencimento = new VencimentoService();
 
-            resultado.CalculoHoraExtra = resultado.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
+            resultado.CalculoHoraExtra = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
             resultado.DescontoFaltasEmHoras = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
             resultado.SalarioBase = salarioBruto + resultado.CalculoHoraExtra - resultado.DescontoFaltasEmHoras;
             resultado.DescontoINSS = desconto.CalcularINSS(resultado.SalarioBase);
-            resultado.DeducaoDependente = resultado.DeducaoDependentes(numeroDependentes);
+            resultado.DeducaoDependente = vencimento.DeducaoDependentes(numeroDependentes);
             resultado.SalarioBaseIR = resultado.SalarioBase - resultado.DescontoINSS - resultado.DeducaoDependente;
             resultado.DescontoIR = desconto.CalcularIRRF(resultado.SalarioBaseIR);
             resultado.ValeTransporte = 0.0;
@@ -56,7 +48,7 @@ namespace folhaPagamento
                 throw new ArgumentException("O valor de faltasEmHoras deve ser maior que zero.");
             }
 
-            double horaExtraCalculada = (salarioBruto / 220) * percentualHoraExtra;
+            double horaExtraCalculada = salarioBruto / 220 * percentualHoraExtra;
             double totalHoraExtra = horaExtraCalculada * horaExtra;
             return totalHoraExtra;
         }
@@ -94,7 +86,7 @@ namespace folhaPagamento
         {
             int mesesTrabalhados = dataDemissao.Month - dataAdmissao.Month;
 
-            return (ultimoSalario / MesesPorAno) * mesesTrabalhados;
+            return ultimoSalario / MesesPorAno * mesesTrabalhados;
         }
         public (double ValorFeriasProporcionais, int MesesProporcionais) CalcularFeriasProporcionais(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
         {
@@ -114,7 +106,7 @@ namespace folhaPagamento
             }
 
             // Verifica se já se passaram mais de 14 dias desde a data de admissão
-            if ((dataCalculo.Day - dataAdmissao.Day) >= 14)
+            if (dataCalculo.Day - dataAdmissao.Day >= 14)
             {
                 mesesProporcionais++; // Adiciona 1 mês completo
             }
@@ -124,7 +116,7 @@ namespace folhaPagamento
 
             if (mesesProporcionais > 0)
             {
-                valorFeriasProporcionais = (salarioBruto / 12) * mesesProporcionais;
+                valorFeriasProporcionais = salarioBruto / 12 * mesesProporcionais;
             }
 
             return (Math.Round(valorFeriasProporcionais, 2), mesesProporcionais);
