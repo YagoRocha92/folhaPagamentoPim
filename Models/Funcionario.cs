@@ -3,10 +3,10 @@
     public class Funcionario
     {
 
-        public int NumeroDependentes;
-        public double SalarioBruto;
-        public bool OptanteValeTransporte;
-        public DateTime Admissao;
+        public int NumeroDependentes { get; set; }
+        public double SalarioBruto { get; set; }
+        public bool OptanteValeTransporte { get; set; }
+        public DateTime Admissao { get; set; }
         public string Nome { get; set; }
         public List<CalculoMensal> CalculosMensais { get; set; }
 
@@ -24,7 +24,6 @@
         {
             CalculosMensais.Add(new CalculoMensal(mes, resultado));
         }
-
         public void AdicionarRescisao(int mes, Rescisao calculoRescisao)
         {
             CalculoMensal calculoMensal = new CalculoMensal();
@@ -32,6 +31,7 @@
             calculoMensal.Mes = mes;
             CalculosMensais.Add(calculoMensal);
         }
+
     }
 
 }

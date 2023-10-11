@@ -1,41 +1,7 @@
-﻿using folhaPagamento.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace folhaPagamento.Service
+﻿namespace folhaPagamento.Service
 {
     public class VencimentoService
     {
-        private const int MesesPorAno = 12;
-       
-        public SalarioMensal CalcularSalarioMensal(double salarioBruto, int numeroDependentes, bool optanteValeTransporte, double percentualHoraExtra, double faltasEmHoras = 0, double horaExtra = 0)
-        {
-            DescontoService desconto = new DescontoService();
-            SalarioMensal resultado = new SalarioMensal();
-            VencimentoService vencimento = new VencimentoService();
-
-            resultado.CalculoHoraExtra = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
-            resultado.DescontoFaltasEmHoras = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
-            resultado.SalarioBase = salarioBruto + resultado.CalculoHoraExtra - resultado.DescontoFaltasEmHoras;
-            resultado.DescontoINSS = desconto.CalcularINSS(resultado.SalarioBase);
-            resultado.DeducaoDependente = vencimento.DeducaoDependentes(numeroDependentes);
-            resultado.SalarioBaseIR = resultado.SalarioBase - resultado.DescontoINSS - resultado.DeducaoDependente;
-            resultado.DescontoIR = desconto.CalcularIRRF(resultado.SalarioBaseIR);
-            resultado.ValeTransporte = 0.0;
-            resultado.Fgts = CalcularFgts(salarioBruto);
-
-            if (optanteValeTransporte)
-            {
-                resultado.ValeTransporte = desconto.CalcularValeTransporte(salarioBruto);
-            }
-
-            resultado.SalarioLiquido = resultado.SalarioBase - resultado.DescontoINSS - resultado.DescontoIR - resultado.ValeTransporte;
-
-            return resultado;
-        }
         public double DeducaoDependentes(int dependentes)
         {
             double deducao = 189.59;
@@ -52,10 +18,19 @@ namespace folhaPagamento.Service
             double totalHoraExtra = horaExtraCalculada * horaExtra;
             return totalHoraExtra;
         }
-        public double CalcularSaldoSalarioRescisao(DateTime dataAdmissao, DateTime dataDemissao, double salarioBruto)
+        public double CalcularSaldoSalario(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
         {
-            int diasTrabalhados = dataDemissao.Day + 1 - dataAdmissao.Day;
-            double valorProporcional = salarioBruto / 30 * diasTrabalhados + 1;
+            int diasTrabalhados;
+
+            if (dataAdmissao.Month == dataCalculo.Month && dataAdmissao.Year == dataCalculo.Year)
+            {
+                diasTrabalhados = dataCalculo.Day - dataAdmissao.Day;
+            }
+            else
+            {
+                diasTrabalhados = dataCalculo.Day;
+            }
+            double valorProporcional = (salarioBruto / 30) * diasTrabalhados;
             return valorProporcional;
         }
         public double CalcularDecimoTerceiro(double salarioBruto, DateTime dataAdmissao)
@@ -82,44 +57,21 @@ namespace folhaPagamento.Service
             }
 
         }
-        public double CalcularDecimoTerceiroRescisao(DateTime dataAdmissao, DateTime dataDemissao, double ultimoSalario)
+        public double CalcularDecimoTerceiroRescisao(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
         {
-            int mesesTrabalhados = dataDemissao.Month - dataAdmissao.Month;
 
-            return ultimoSalario / MesesPorAno * mesesTrabalhados;
-        }
-        public (double ValorFeriasProporcionais, int MesesProporcionais) CalcularFeriasProporcionais(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
-        {
-            if (dataCalculo < dataAdmissao)
+            if (dataAdmissao.Year == dataCalculo.Year)
             {
-                throw new ArgumentException("A data de cálculo não pode ser anterior à data de admissão.");
+                // Cálculo proporcional ao número de meses trabalhados no mesmo ano
+                int mesesTrabalhados = (dataCalculo.Month - dataAdmissao.Month);
+                double decimoTerceiroProporcional = (salarioBruto / 12) * mesesTrabalhados;
+                return decimoTerceiroProporcional;
             }
-
-            int anosTrabalhados = dataCalculo.Year - dataAdmissao.Year;
-            int mesesTrabalhados = (dataCalculo.Year - dataAdmissao.Year) * 12 + dataCalculo.Month - dataAdmissao.Month;
-            int mesesProporcionais = mesesTrabalhados;
-
-            // Se houver mais de um ano completo, subtraia os meses de anos completos.
-            if (anosTrabalhados > 0)
+            else
             {
-                mesesProporcionais -= anosTrabalhados * 12;
+                // Cálculo integral, considerando o salário bruto
+                return salarioBruto;
             }
-
-            // Verifica se já se passaram mais de 14 dias desde a data de admissão
-            if (dataCalculo.Day - dataAdmissao.Day >= 14)
-            {
-                mesesProporcionais++; // Adiciona 1 mês completo
-            }
-
-            // Inicializar o valor
-            double valorFeriasProporcionais = 0.0;
-
-            if (mesesProporcionais > 0)
-            {
-                valorFeriasProporcionais = salarioBruto / 12 * mesesProporcionais;
-            }
-
-            return (Math.Round(valorFeriasProporcionais, 2), mesesProporcionais);
         }
         public double CalcularFgts(double salarioBruto)
         {
@@ -127,6 +79,5 @@ namespace folhaPagamento.Service
             return fgtsMensal;
         }
     }
-
 }
 

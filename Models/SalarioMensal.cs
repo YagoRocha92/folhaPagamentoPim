@@ -9,6 +9,7 @@ namespace folhaPagamento.Models
     public class SalarioMensal
     {
         public double SalarioBase { get; set; }
+        public double SalarioBaseInss { get; set; }
         public double DescontoINSS { get; set; }
         public double SalarioBaseIR { get; set; }
         public double DescontoIR { get; set; }

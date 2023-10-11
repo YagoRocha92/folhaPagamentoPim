@@ -14,10 +14,10 @@ namespace folhaPagamento
             double horaExtra = 6;
             bool optanteValeTransporte = true;
             double percentualHoraExtra = 1.5;
-            DateTime dataAdmissao = new DateTime(2022, 5, 7);
-            DateTime dataDemissao = new DateTime(2025, 8, 7);
-            DateTime dataCalculoFerias = new DateTime(2025, 10, 22);
-            DateTime dataCalculoDecimoTerceiro = new DateTime(2025, 11, 20);
+            DateTime dataAdmissao = new DateTime(2023, 10, 8);
+            DateTime dataDemissao = new DateTime(2023, 11, 10);
+            DateTime dataCalculoFerias = new DateTime(2025, 10, 25);
+            DateTime dataCalculoDecimoTerceiro = new DateTime(2023, 10, 8);
 
             MotivoRescisao motivoRescisao = MotivoRescisao.DespedidaSemJustaCausa;
             bool cumprirAviso = true;
@@ -28,35 +28,48 @@ namespace folhaPagamento
 
             // Calcular 13º 
             double decimoTerceiro = vencimento.CalcularDecimoTerceiroRescisao(dataAdmissao, dataCalculoDecimoTerceiro, salarioBruto);
-            Console.WriteLine("13º Salario");
-            Console.WriteLine($"Data de calculo do 13º é {dataCalculoDecimoTerceiro} e sua admissão foi em {dataAdmissao}");
+            Console.WriteLine("-----------CALCULO 13º SALARIO-----------");
+            Console.WriteLine($"Data de calculo do 13º é {dataCalculoDecimoTerceiro.ToString("dd/MM/yyyy")} e sua admissão foi em {dataAdmissao.ToString("dd/MM/yyyy")}");
             Console.WriteLine($"Funcionário: {funcionario.Nome}");
             Console.WriteLine($"Valor 13º: {decimoTerceiro:F2}");
+            Console.WriteLine("-----------FIM CALCULO 13º SALARIO-----------");
             Console.WriteLine();
 
 
-            // Calcular Férias
-            (double calculoFerias, int mesesProporcionais) = vencimento.CalcularFeriasProporcionais(dataAdmissao, dataCalculoFerias, salarioBruto);
-            Console.WriteLine("Férias");
-            Console.WriteLine($"Está saindo de férias em {dataCalculoFerias} e sua admissão foi em {dataAdmissao}");
+           // Calcular Férias
+            FeriasService calcularFerias = new FeriasService();
+            Ferias ferias = new Ferias();
+            ferias = calcularFerias.CalcularFeriasProporcionais(dataAdmissao, dataCalculoFerias, salarioBruto, numeroDependentes);
+
+            Console.WriteLine("-----------CALCULO DE FÉRIAS-----------");
+            Console.WriteLine($"Está saindo de férias em {dataCalculoFerias.ToString("dd/MM/yyyy")} e sua admissão foi em {dataAdmissao.ToString("dd/MM/yyyy")}");
             Console.WriteLine($"Funcionário: {funcionario.Nome}");
-            Console.WriteLine($"Valor Férias: {calculoFerias:F2}");
-            Console.WriteLine($"1/3 de férias é {calculoFerias / 3:F2}");
-            Console.WriteLine($"Meses Proporcionais: {mesesProporcionais}");
+            Console.WriteLine($"Valor Férias: {ferias.ValorFeriasProporcionais:F2}");
+            Console.WriteLine($"1/3 de férias é {ferias.UmtercoFerias:F2}");
+            Console.WriteLine($"Meses Proporcionais: {ferias.MesesProporcionais}");
+            Console.WriteLine("DESCONTOS:");
+            Console.WriteLine();
+            Console.WriteLine($"INSS: {ferias.DescontoInssFerias:F2}");
+            Console.WriteLine($"IRRF: {ferias.DescontoIrrfFerias:F2}");
+            Console.WriteLine();
+            Console.WriteLine($"Valor Liquido: {ferias.SaldoFeriasLiquido:F2}");
+            Console.WriteLine("-----------FIM CALCULO DE FÉRIAS-----------");
             Console.WriteLine();
 
             // Calcular Salario Mensal
-            SalarioMensal resultado = vencimento.CalcularSalarioMensal(salarioBruto, numeroDependentes, optanteValeTransporte, percentualHoraExtra, faltas, horaExtra);
+            SalarioMensalService salario = new SalarioMensalService();
+            SalarioMensal resultado = salario.CalcularSalarioMensal(dataAdmissao, salarioBruto, numeroDependentes, optanteValeTransporte, percentualHoraExtra, faltas, horaExtra);
 
             funcionario.AdicionarCalculoMensal(1, resultado);
 
             foreach (var calculoMensal in funcionario.CalculosMensais)
             {
-                Console.WriteLine("Calculo Mensal");
+                Console.WriteLine("-----------CALCULO SALARIO MENSAL-----------");
                 Console.WriteLine($"Funcionário: {funcionario.Nome}");
-                Console.WriteLine($"Admissão: {dataAdmissao}");
+                Console.WriteLine($"Admissão: {dataAdmissao.ToString("dd/MM/yyyy")}");
                 Console.WriteLine($"Mês: {calculoMensal.Mes}");
-                Console.WriteLine($"O Salario Bruto é R${funcionario.SalarioBruto:F2}");
+                Console.WriteLine($"O Salario Bruto é R${calculoMensal.Resultado.SalarioBase:F2}");
+
                 Console.WriteLine($"HORA EXTRA R${calculoMensal.Resultado.CalculoHoraExtra:F2}");
                 Console.WriteLine("DESCONTO: ");
                 Console.WriteLine($"IR R${calculoMensal.Resultado.DescontoIR:F2}");
@@ -65,13 +78,14 @@ namespace folhaPagamento
                 Console.WriteLine($"FALTAS R${calculoMensal.Resultado.DescontoFaltasEmHoras:F2}");
                 Console.WriteLine("**************************************************************");
                 Console.WriteLine($"LIQUIDO A RECEBER: R${calculoMensal.Resultado.SalarioLiquido:F2}");
+                Console.WriteLine("-----------FIM CALCULO SALARIO MENSAL-----------");
                 Console.WriteLine();
             }
 
             // Calcular Rescisão
-            Rescisao rescisaoCalculada = new Rescisao();
+            RecisaoService rescisao = new RecisaoService();
 
-            Rescisao rescisaoCalculo = rescisaoCalculada.CalcularRescisao(
+            Rescisao rescisaoCalculo = rescisao.CalcularRescisao(
                 dataAdmissao,
                 dataDemissao,
                 salarioBruto,
@@ -82,11 +96,12 @@ namespace folhaPagamento
                 cumprirAviso,
                 faltas
             );
+            funcionario.AdicionarRescisao(1, rescisaoCalculo);
 
-            Console.WriteLine("Rescisão");
+            Console.WriteLine("-----------CALCULO RESCISÃO-----------");
             Console.WriteLine($"Funcionário: {nome}");
-            Console.WriteLine($"Admissao: {dataAdmissao}");
-            Console.WriteLine($"Demissão: {dataDemissao}");
+            Console.WriteLine($"Admissao: {dataAdmissao.ToString("dd/MM/yyyy")}");
+            Console.WriteLine($"Demissão: {dataDemissao.ToString("dd/MM/yyyy")}");
             Console.WriteLine("Saldo de Salário na Rescisão: " + rescisaoCalculo.SaldoSalarioRescisao.ToString("N2"));
             Console.WriteLine("Décimo Terceiro na Rescisão: " + rescisaoCalculo.DecimoTerceiroRescisao.ToString("N2"));
             Console.WriteLine("Férias na Rescisão: " + rescisaoCalculo.FeriasRescisao.ToString("N2"));
@@ -99,6 +114,8 @@ namespace folhaPagamento
             Console.WriteLine("Salário Base INSS na Rescisão: " + rescisaoCalculo.SalarioBaseInssRescisão.ToString("N2"));
             Console.WriteLine("Salário Base IRRF na Rescisão: " + rescisaoCalculo.SalarioBaseIrrfRescisao.ToString("N2"));
             Console.WriteLine("Desconto de IRRF na Rescisão: " + rescisaoCalculo.DescontoIrrfRescisao.ToString("N2"));
+            Console.WriteLine("-----------FIM CALCULO RESCISÃO-----------");
+            Console.WriteLine();
         }
     }
 }
