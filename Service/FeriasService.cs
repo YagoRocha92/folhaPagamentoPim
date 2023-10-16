@@ -4,6 +4,8 @@ namespace folhaPagamento.Service
 {
     public class FeriasService
     {
+        // VERIFICAR E CORRIGIR A REGRA DE CALCULO DO METODO
+
         public Ferias CalcularFeriasProporcionais(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto, int dependente)
         {
             Ferias ferias = new Ferias();
@@ -41,8 +43,8 @@ namespace folhaPagamento.Service
 
             ferias.ValorFeriasProporcionais = Math.Round(valorFeriasProporcionais, 2);
             ferias.MesesProporcionais = mesesProporcionais;
-            ferias.UmtercoFerias = ferias.ValorFeriasProporcionais / 3;
-            ferias.SalarioBaseInssFerias = ferias.ValorFeriasProporcionais + ferias.UmtercoFerias;
+            ferias.UmTercoFerias = ferias.ValorFeriasProporcionais / 3;
+            ferias.SalarioBaseInssFerias = ferias.ValorFeriasProporcionais + ferias.UmTercoFerias;
             ferias.DescontoInssFerias = desconto.CalcularINSS(ferias.SalarioBaseInssFerias);
             ferias.SalarioBaseIrrfFerias = ferias.SalarioBaseInssFerias - ferias.DescontoInssFerias - vencimento.DeducaoDependentes(dependente);
             ferias.DescontoIrrfFerias = desconto.CalcularIRRF(ferias.SalarioBaseIrrfFerias);
@@ -51,9 +53,8 @@ namespace folhaPagamento.Service
             ferias.SaldoFeriasLiquido = ferias.SalarioBaseInssFerias - ferias.DescontoInssFerias - ferias.DescontoIrrfFerias;
 
 
-
             return ferias;
-
+       
         }
     }
 }

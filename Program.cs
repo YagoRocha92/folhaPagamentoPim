@@ -15,7 +15,7 @@ namespace folhaPagamento
             bool optanteValeTransporte = true;
             double percentualHoraExtra = 1.5;
             DateTime dataAdmissao = new DateTime(2023, 10, 8);
-            DateTime dataDemissao = new DateTime(2023, 11, 10);
+            DateTime dataDemissao = new DateTime(2023, 12, 21);
             DateTime dataCalculoFerias = new DateTime(2025, 10, 25);
             DateTime dataCalculoDecimoTerceiro = new DateTime(2023, 10, 8);
 
@@ -45,7 +45,7 @@ namespace folhaPagamento
             Console.WriteLine($"Está saindo de férias em {dataCalculoFerias.ToString("dd/MM/yyyy")} e sua admissão foi em {dataAdmissao.ToString("dd/MM/yyyy")}");
             Console.WriteLine($"Funcionário: {funcionario.Nome}");
             Console.WriteLine($"Valor Férias: {ferias.ValorFeriasProporcionais:F2}");
-            Console.WriteLine($"1/3 de férias é {ferias.UmtercoFerias:F2}");
+            Console.WriteLine($"1/3 de férias é {ferias.UmTercoFerias:F2}");
             Console.WriteLine($"Meses Proporcionais: {ferias.MesesProporcionais}");
             Console.WriteLine("DESCONTOS:");
             Console.WriteLine();
@@ -104,8 +104,9 @@ namespace folhaPagamento
             Console.WriteLine($"Demissão: {dataDemissao.ToString("dd/MM/yyyy")}");
             Console.WriteLine("Saldo de Salário na Rescisão: " + rescisaoCalculo.SaldoSalarioRescisao.ToString("N2"));
             Console.WriteLine("Décimo Terceiro na Rescisão: " + rescisaoCalculo.DecimoTerceiroRescisao.ToString("N2"));
-            Console.WriteLine("Férias na Rescisão: " + rescisaoCalculo.FeriasRescisao.ToString("N2"));
-            Console.WriteLine("Mês Proporcional  de Férias: " + rescisaoCalculo.MesesFerias);
+            Console.WriteLine("Férias na Rescisão: " + rescisaoCalculo.Ferias.ValorFeriasProporcionais.ToString("N2"));
+            Console.WriteLine("1/3 de férias na Rescisão: " + rescisaoCalculo.Ferias.UmTercoFerias.ToString("N2"));
+            Console.WriteLine("Mês Proporcional  de Férias: " + rescisaoCalculo.Ferias.MesesProporcionais);
             Console.WriteLine("Aviso Prévio na Rescisão: " + rescisaoCalculo.AvisoPrevioRescisao.ToString("N2"));
             Console.WriteLine("Hora Extra na Rescisão: " + rescisaoCalculo.HoraExtraRescisao.ToString("N2"));
             Console.WriteLine("Desconto de Faltas: " + rescisaoCalculo.DescontoFaltas.ToString("N2"));

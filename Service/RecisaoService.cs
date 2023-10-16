@@ -32,7 +32,7 @@ namespace folhaPagamento.Service
                     resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
 
                     resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao +
-                        resultado.FeriasRescisao + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
+                        resultado.Ferias.ValorFeriasProporcionais + resultado.Ferias.UmTercoFerias + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
 
                     resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
 
@@ -42,8 +42,8 @@ namespace folhaPagamento.Service
 
                     resultado.Fgts = vencimento.CalcularFgts(resultado.SalarioBaseInssRescisão);
 
-                    resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao + resultado.FeriasRescisao + resultado.AvisoPrevioRescisao +
-                        resultado.HoraExtraRescisao - resultado.DescontoFaltas - resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
+                    resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao + resultado.Ferias.ValorFeriasProporcionais + resultado.Ferias.UmTercoFerias 
+                        + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas - resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
                     break;
 
                 case MotivoRescisao.DespedidaPorJustaCausa:
@@ -52,8 +52,8 @@ namespace folhaPagamento.Service
                     resultado.HoraExtraRescisao = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
                     resultado.DescontoFaltas = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
 
-                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.FeriasRescisao +
-                        resultado.HoraExtraRescisao - resultado.DescontoFaltas;
+                    resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.Ferias.ValorFeriasProporcionais + 
+                        resultado.Ferias.UmTercoFerias + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
 
                     resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
 
@@ -63,8 +63,8 @@ namespace folhaPagamento.Service
 
                     resultado.Fgts = vencimento.CalcularFgts(resultado.SalarioBaseInssRescisão);
 
-                    resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.FeriasRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas - 
-                        resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
+                    resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.Ferias.ValorFeriasProporcionais + resultado.Ferias.UmTercoFerias
+                        + resultado.HoraExtraRescisao - resultado.DescontoFaltas - resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
                     break;
 
                 case MotivoRescisao.PedidoDeDemissao:
@@ -85,7 +85,7 @@ namespace folhaPagamento.Service
                     }
 
                     resultado.SalarioBaseInssRescisão = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao +
-                        resultado.FeriasRescisao + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
+                        resultado.Ferias.ValorFeriasProporcionais + resultado.Ferias.UmTercoFerias + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas;
 
                     resultado.DescontoInssRescisao = desconto.CalcularINSS(resultado.SalarioBaseInssRescisão);
 
@@ -95,8 +95,8 @@ namespace folhaPagamento.Service
                     
                     resultado.Fgts = vencimento.CalcularFgts(resultado.SalarioBaseInssRescisão);
 
-                    resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao + resultado.FeriasRescisao + resultado.AvisoPrevioRescisao +
-                        resultado.HoraExtraRescisao - resultado.DescontoFaltas - resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
+                    resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao + resultado.Ferias.ValorFeriasProporcionais
+                      + resultado.Ferias.UmTercoFerias + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas - resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
                     break;
             }
 

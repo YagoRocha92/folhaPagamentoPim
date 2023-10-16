@@ -10,7 +10,7 @@
         public double SalarioBaseIrrfFerias { get; set; }
         public double DescontoIrrfFerias { get; set; }
         public double SaldoFeriasLiquido { get; set; }
-        public double UmtercoFerias { get; set; }
+        public double UmTercoFerias { get; set; }
 
         public Ferias()
         {
