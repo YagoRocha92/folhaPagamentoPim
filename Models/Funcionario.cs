@@ -2,7 +2,6 @@
 {
     public class Funcionario
     {
-
         public string Nome { get; set; }
         public double SalarioBruto { get; set; }
         public int NumeroDependentes { get; set; }

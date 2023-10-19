@@ -7,8 +7,8 @@ namespace folhaPagamento.Service
         public Ferias CalcularFeriasProporcionais(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto, int dependente)
         {
             Ferias ferias = new Ferias();
-            DescontoService desconto = new DescontoService();
-            VencimentoService vencimento = new VencimentoService();
+            DescontoService descontoService = new DescontoService();
+            VencimentoService vencimentoService = new VencimentoService();
 
             if (dataCalculo < dataAdmissao)
             {
@@ -43,10 +43,10 @@ namespace folhaPagamento.Service
             ferias.MesesProporcionais = mesesProporcionais;
             ferias.UmTercoFerias = ferias.ValorFeriasProporcionais / 3;
             ferias.SalarioBaseInssFerias = ferias.ValorFeriasProporcionais + ferias.UmTercoFerias;
-            ferias.DescontoInssFerias = desconto.CalcularINSS(ferias.SalarioBaseInssFerias);
-            ferias.SalarioBaseIrrfFerias = ferias.SalarioBaseInssFerias - ferias.DescontoInssFerias - vencimento.DeducaoDependentes(dependente);
-            ferias.DescontoIrrfFerias = desconto.CalcularIRRF(ferias.SalarioBaseIrrfFerias);
-            ferias.Fgts = vencimento.CalcularFgts(ferias.SalarioBaseInssFerias);
+            ferias.DescontoInssFerias = descontoService.CalcularINSS(ferias.SalarioBaseInssFerias);
+            ferias.SalarioBaseIrrfFerias = ferias.SalarioBaseInssFerias - ferias.DescontoInssFerias - vencimentoService.DeducaoDependentes(dependente);
+            ferias.DescontoIrrfFerias = descontoService.CalcularIRRF(ferias.SalarioBaseIrrfFerias);
+            ferias.Fgts = vencimentoService.CalcularFgts(ferias.SalarioBaseInssFerias);
 
             ferias.SaldoFeriasLiquido = ferias.SalarioBaseInssFerias - ferias.DescontoInssFerias - ferias.DescontoIrrfFerias;
 

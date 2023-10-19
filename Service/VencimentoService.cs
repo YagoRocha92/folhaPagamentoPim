@@ -48,7 +48,6 @@
             double valorProporcional = (salarioBruto / 30) * diasTrabalhados;
             return valorProporcional;
         }
-
         public double CalcularFgts(double salarioBruto)
         {
             double fgtsMensal = salarioBruto * 0.08;

@@ -25,7 +25,6 @@ namespace folhaPagamento
             DateTime dataCalculoDecimoTerceiro = new DateTime(2024, 10, 8);
             DateTime dataCalculoSalarioMensal = new DateTime(2023, 10, 15);
 
-
             MotivoRescisao motivoRescisao = MotivoRescisao.DespedidaSemJustaCausa;
 
             Funcionario funcionario = new Funcionario(numeroDependentes, salarioBruto, optanteValeTransporte, dataAdmissao, nome);

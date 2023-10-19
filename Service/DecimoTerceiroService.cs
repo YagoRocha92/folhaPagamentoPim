@@ -6,8 +6,8 @@ namespace folhaPagamento.Service
     {
         public DecimoTerceiro CalcularDecimoTerceiro(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto, int dependente)
         {
-            DescontoService desconto = new DescontoService();
-            VencimentoService vencimento = new VencimentoService();
+            DescontoService descontoService = new DescontoService();
+            VencimentoService vencimentoService = new VencimentoService();
             DecimoTerceiro decimoTerceiro = new DecimoTerceiro();
 
             int anoAdmissao = dataAdmissao.Year;
@@ -31,12 +31,12 @@ namespace folhaPagamento.Service
 
             decimoTerceiro.ValorDecimoTerceiro = (salarioBruto / 12) * decimoTerceiro.MesesTrabalhados;
             decimoTerceiro.SalarioBaseInssDecimoTerceiro = decimoTerceiro.ValorDecimoTerceiro;
-            decimoTerceiro.DescontoInssDecimoTerceiro = desconto.CalcularINSS(decimoTerceiro.SalarioBaseInssDecimoTerceiro);
+            decimoTerceiro.DescontoInssDecimoTerceiro = descontoService.CalcularINSS(decimoTerceiro.SalarioBaseInssDecimoTerceiro);
 
-            decimoTerceiro.SalarioBaseIrrfDecimoTerceiro = decimoTerceiro.ValorDecimoTerceiro - decimoTerceiro.DescontoInssDecimoTerceiro - vencimento.DeducaoDependentes(dependente);
-            decimoTerceiro.DescontoIrrfDecimoTerceiro = desconto.CalcularIRRF(decimoTerceiro.SalarioBaseIrrfDecimoTerceiro);
+            decimoTerceiro.SalarioBaseIrrfDecimoTerceiro = decimoTerceiro.ValorDecimoTerceiro - decimoTerceiro.DescontoInssDecimoTerceiro - vencimentoService.DeducaoDependentes(dependente);
+            decimoTerceiro.DescontoIrrfDecimoTerceiro = descontoService.CalcularIRRF(decimoTerceiro.SalarioBaseIrrfDecimoTerceiro);
             decimoTerceiro.SaldoDecimoTerceiroLiquido = decimoTerceiro.ValorDecimoTerceiro - decimoTerceiro.DescontoInssDecimoTerceiro - decimoTerceiro.DescontoIrrfDecimoTerceiro;
-            decimoTerceiro.Fgts = vencimento.CalcularFgts(decimoTerceiro.ValorDecimoTerceiro);
+            decimoTerceiro.Fgts = vencimentoService.CalcularFgts(decimoTerceiro.ValorDecimoTerceiro);
             return decimoTerceiro;
         }
     }

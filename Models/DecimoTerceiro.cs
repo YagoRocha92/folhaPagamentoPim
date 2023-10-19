@@ -10,6 +10,7 @@
         public double DescontoIrrfDecimoTerceiro { get; set; }
         public double SaldoDecimoTerceiroLiquido { get; set; }
         public double Fgts { get; set; }
+
         public DecimoTerceiro()
         {
         }

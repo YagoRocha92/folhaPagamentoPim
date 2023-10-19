@@ -8,15 +8,8 @@
         public Ferias Ferias { get; set; }
         public DecimoTerceiro DecimoTerceiro { get; set; }
 
-
         public CalculoMensal()
         {
-        }
-
-        public CalculoMensal(int mes, SalarioMensal resultado)
-        {
-            Mes = mes;
-            SalarioMensal = resultado;
         }
 
     }

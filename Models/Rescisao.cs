@@ -9,10 +9,7 @@
     }
     public class Rescisao
     {
-        
         public double SaldoSalarioRescisao { get; set; }
-        public double FeriasRescisao { get; set; }
-        public int MesesFerias { get; set; }
         public double AvisoPrevioRescisao { get; set; }
         public double HoraExtraRescisao { get; set; }
         public double DescontoFaltas { get; set; }
