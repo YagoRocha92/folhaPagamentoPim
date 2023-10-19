@@ -11,7 +11,6 @@
     {
         
         public double SaldoSalarioRescisao { get; set; }
-        public double DecimoTerceiroRescisao { get; set; }
         public double FeriasRescisao { get; set; }
         public int MesesFerias { get; set; }
         public double AvisoPrevioRescisao { get; set; }
@@ -24,8 +23,7 @@
         public double DescontoIrrfRescisao { get; set; }
         public double SaldoRescisaoLiquido { get; set; }
         public Ferias Ferias { get; set; }
-
-
+        public DecimoTerceiro DecimoTerceiroRescisao { get; set; }
 
 
         public Rescisao()

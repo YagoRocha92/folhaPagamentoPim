@@ -92,9 +92,20 @@
             }
             return inssTotal;
         }
-        public double CalcularValeTransporte(double salarioBruto)
+        public double CalcularValeTransporte(double valorValeTransporte, double salarioBruto)
         {
-            return salarioBruto * 0.06;
+            double descontoValetransporte;
+
+            if(valorValeTransporte >= (salarioBruto * 0.06))
+            {
+                descontoValetransporte = salarioBruto * 0.06;
+            }
+            else
+            {
+                descontoValetransporte = valorValeTransporte;
+            }
+            
+            return descontoValetransporte;
         }
     }
 }

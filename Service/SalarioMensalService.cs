@@ -4,7 +4,7 @@ namespace folhaPagamento.Service
 {
     public class SalarioMensalService
     {
-        public SalarioMensal CalcularSalarioMensal(DateTime dataAdmissao, double salarioBruto, int numeroDependentes, bool optanteValeTransporte, double percentualHoraExtra, double faltasEmHoras = 0, double horaExtra = 0)
+        public SalarioMensal CalcularSalarioMensal(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto, int numeroDependentes, bool optanteValeTransporte, double percentualHoraExtra, double valorValeTransporte, double faltasEmHoras = 0, double horaExtra = 0)
         {
             DescontoService desconto = new DescontoService();
             SalarioMensal resultado = new SalarioMensal();
@@ -12,7 +12,7 @@ namespace folhaPagamento.Service
 
             resultado.CalculoHoraExtra = vencimento.CalcularHoraExtra(horaExtra, salarioBruto, percentualHoraExtra);
             resultado.DescontoFaltasEmHoras = desconto.CalcularDescontoFaltasEmHoras(faltasEmHoras, salarioBruto);
-            resultado.SalarioBase = vencimento.CalcularSaldoSalario(dataAdmissao, DateTime.Now, salarioBruto);
+            resultado.SalarioBase = vencimento.CalcularSalarioMes(dataAdmissao, dataCalculo, salarioBruto);
             resultado.SalarioBaseInss = resultado.SalarioBase + resultado.CalculoHoraExtra - resultado.DescontoFaltasEmHoras;
             resultado.DescontoINSS = desconto.CalcularINSS(resultado.SalarioBase);
             resultado.DeducaoDependente = vencimento.DeducaoDependentes(numeroDependentes);
@@ -23,7 +23,7 @@ namespace folhaPagamento.Service
 
             if (optanteValeTransporte)
             {
-                resultado.ValeTransporte = desconto.CalcularValeTransporte(salarioBruto);
+                resultado.ValeTransporte = desconto.CalcularValeTransporte(valorValeTransporte,salarioBruto);
             }
 
             resultado.SalarioLiquido = resultado.SalarioBase - resultado.DescontoINSS - resultado.DescontoIR - resultado.ValeTransporte;

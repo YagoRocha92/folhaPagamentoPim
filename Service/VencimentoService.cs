@@ -33,46 +33,22 @@
             double valorProporcional = (salarioBruto / 30) * diasTrabalhados;
             return valorProporcional;
         }
-        public double CalcularDecimoTerceiro(double salarioBruto, DateTime dataAdmissao)
+        public double CalcularSalarioMes(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
         {
-            DateTime dataAtualDoCalculo = new DateTime(DateTime.Now.Year, 12, 31);
+            int diasTrabalhados;
 
-            if (dataAdmissao <= dataAtualDoCalculo)
+            if (dataAdmissao.Month == dataCalculo.Month && dataAdmissao.Year == dataCalculo.Year)
             {
-                int mesesTrabalhados = (dataAtualDoCalculo.Year - dataAdmissao.Year) * 12 + dataAtualDoCalculo.Month - dataAdmissao.Month;
-
-                if (mesesTrabalhados > 0)
-                {
-                    double salarioDecimoTerceiro = salarioBruto * (mesesTrabalhados / 12.0);
-                    return salarioDecimoTerceiro;
-                }
-                else
-                {
-                    throw new ArgumentException("O funcionário não trabalhou tempo suficiente para receber o 13º salário.");
-                }
+                diasTrabalhados = dataCalculo.Day - dataAdmissao.Day;
             }
             else
             {
-                throw new ArgumentException("A data de admissão não pode estar no futuro.");
+                diasTrabalhados = 30;
             }
-
+            double valorProporcional = (salarioBruto / 30) * diasTrabalhados;
+            return valorProporcional;
         }
-        public double CalcularDecimoTerceiroRescisao(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto)
-        {
 
-            if (dataAdmissao.Year == dataCalculo.Year)
-            {
-                // Cálculo proporcional ao número de meses trabalhados no mesmo ano
-                int mesesTrabalhados = (dataCalculo.Month - dataAdmissao.Month);
-                double decimoTerceiroProporcional = (salarioBruto / 12) * mesesTrabalhados;
-                return decimoTerceiroProporcional;
-            }
-            else
-            {
-                // Cálculo integral, considerando o salário bruto
-                return salarioBruto;
-            }
-        }
         public double CalcularFgts(double salarioBruto)
         {
             double fgtsMensal = salarioBruto * 0.08;

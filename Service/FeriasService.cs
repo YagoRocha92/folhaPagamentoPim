@@ -4,8 +4,6 @@ namespace folhaPagamento.Service
 {
     public class FeriasService
     {
-        // VERIFICAR E CORRIGIR A REGRA DE CALCULO DO METODO
-
         public Ferias CalcularFeriasProporcionais(DateTime dataAdmissao, DateTime dataCalculo, double salarioBruto, int dependente)
         {
             Ferias ferias = new Ferias();
