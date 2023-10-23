@@ -42,7 +42,7 @@ namespace folhaPagamento.Service
 
                     resultado.DescontoIrrfRescisao = descontoService.CalcularIRRF(resultado.SalarioBaseIrrfRescisao);
 
-                    resultado.Fgts = vencimento.CalcularFgts(resultado.SalarioBaseInssRescisão);
+                    resultado.Fgts = vencimentoService.CalcularFgts(resultado.SalarioBaseInssRescisão);
 
                     resultado.SaldoRescisaoLiquido = resultado.SaldoSalarioRescisao + resultado.DecimoTerceiroRescisao.ValorDecimoTerceiro + resultado.Ferias.ValorFeriasProporcionais + resultado.Ferias.UmTercoFerias 
                         + resultado.AvisoPrevioRescisao + resultado.HoraExtraRescisao - resultado.DescontoFaltas - resultado.DescontoInssRescisao - resultado.DescontoIrrfRescisao;
